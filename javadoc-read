@@ -1,0 +1,48 @@
+ #!/bin/sh
+
+###
+#
+# Read Javadocs from a JAR in your browser.
+#
+# The JAR file will be extracted to /tmp (if it has not been extracted before),
+# and its index.html will be opened in your default web browser.
+#
+###
+
+if [ "$#" -ne 1 ]
+then
+  CMD_NAME=$(basename $0)
+  echo "usage: $CMD_NAME JAVADOC_ARCHIVE"
+  exit 1
+fi
+
+set -e
+
+ARCHIVE_FILE_PATH="$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1")"
+ARCHIVE_FILE_NAME=$(basename "$ARCHIVE_FILE_PATH")
+ARCHIVE_DIR_NAME=$(echo "$ARCHIVE_FILE_NAME" | rev | cut -d '.' -f 2-  | rev)
+
+TMP_DIR=/tmp/javadoc-read
+mkdir -p $TMP_DIR
+cd $TMP_DIR
+
+# if the jar hasn't already been extracted, extract it
+if [ ! -d "$ARCHIVE_DIR_NAME" ]
+then
+  mkdir $ARCHIVE_DIR_NAME
+  cd $ARCHIVE_DIR_NAME
+  jar --extract --file "$ARCHIVE_FILE_PATH"
+fi
+
+# open the index file of the javadoc in a web browser
+INDEX_FILE="$TMP_DIR/$ARCHIVE_DIR_NAME/index.html"
+if [[ "$OSTYPE" == "linux-gnu"* ]]
+then
+  xdg-open "$INDEX_FILE"
+elif [[ "$OSTYPE" == "darwin"* ]]
+then
+  open "$INDEX_FILE"
+else
+  echo "unknown os: $OSTYPE"
+  echo "try to open: $INDEX_FILE"
+fi

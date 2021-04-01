@@ -1,0 +1,38 @@
+#!/bin/sh
+
+JAVA_HOME="/home/carter/bin/jdk-15.0.2+7"
+
+if [ "$#" -eq 0 ]
+then
+  SCRIPT_NAME=$(basename $0)
+  echo "usage: $SCRIPT_NAME GOOGLE_JAVA_FORMAT_ARGS"
+  echo "To format all .java files under the present working directory: $SCRIPT_NAME -R"
+  echo "To clear the cached version of google-java-format.jar, and trigger an update: $SCRIPT_NAME update"
+  exit 1
+fi
+
+set -o errexit
+
+TMP_DIR=/tmp/google-java-format
+JAR_FILE=$TMP_DIR/google-java-format.jar
+
+if [ "$#" -eq 1 ] && [ "$1" = "update" ]
+then
+  rm --recursive --force $TMP_DIR
+  exit 0
+fi
+
+mkdir -p $TMP_DIR
+
+if [ ! -f "$JAR_FILE" ]
+then
+  DOWNLOAD_URL=$(curl --silent https://api.github.com/repos/google/google-java-format/releases/latest | jq --raw-output '.assets[] | select(.name | contains("all-deps")) | .browser_download_url')
+  wget --output-file /dev/null --output-document "$JAR_FILE" "$DOWNLOAD_URL"
+fi
+
+if [ "$#" -eq 1 ] && [ "$1" = "-R" ]
+then
+  find . -type f -name "*.java" -exec $JAVA_HOME/bin/java -jar "$JAR_FILE" --replace {} +
+else
+  $JAVA_HOME/bin/java -jar "$JAR_FILE" "$@"
+fi

@@ -1,5 +1,11 @@
 #!/bin/sh
 
+###
+#
+# Get the admin token for your kubernetes-dashboard.
+#
+###
+
 set -e
 
 SECRET_NAME=$(kubectl --namespace kubernetes-dashboard get secrets | grep admin-user | awk '{print $1}')

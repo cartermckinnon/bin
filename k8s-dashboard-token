@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+SECRET_NAME=$(kubectl --namespace kubernetes-dashboard get secrets | grep admin-user | awk '{print $1}')
+BASE64_SECRET=$(kubectl --namespace kubernetes-dashboard get secret $SECRET_NAME --template='{{ .data.token }}')
+SECRET=$(echo "$BASE64_SECRET" | base64 --decode)
+
+echo "$SECRET"

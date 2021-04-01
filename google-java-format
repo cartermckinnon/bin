@@ -1,5 +1,15 @@
 #!/bin/sh
 
+#####
+#
+# A wrapper around google-java-format that downloads the latest version from GitHub automatically.
+#
+# The JAR file will be saved to /tmp (if one does not exist).
+#
+# Requires `jq` to parse GitHub API response.
+#
+#####
+
 JAVA_HOME="/home/carter/bin/jdk-15.0.2+7"
 
 if [ "$#" -eq 0 ]

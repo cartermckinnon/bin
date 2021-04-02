@@ -1,4 +1,4 @@
-### Utilities, helpers, and hacks from my `PATH`.
+### Utilities, helpers, and hacks.
 
 Add these to your `PATH` with something like:
 
